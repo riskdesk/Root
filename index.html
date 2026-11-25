@@ -151,8 +151,8 @@
             gap: 16px;
             opacity: 0;
             transform: translateY(30px);
-            pointer-events: none;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            visibility: hidden;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.8s;
         }
         @media (min-width: 640px) {
             .portal-container {
@@ -170,7 +170,8 @@
         .portal-container.revealed {
             opacity: 1;
             transform: translateY(0);
-            pointer-events: auto;
+            visibility: visible;
+            transition-delay: 0s;
         }
 
         /* Interactive Portal Link Banners */
@@ -523,6 +524,16 @@
                 document.getElementById('splashScreen').style.display = 'none';
             }, 900);
         }
+
+        // After the reveal animation, drop the transform/transition on the grid so iOS Safari
+        // hit-testing for the links is plain and reliable.
+        document.getElementById('portalMatrix').addEventListener('transitionend', (ev) => {
+            const m = ev.currentTarget;
+            if (ev.target === m && m.classList.contains('revealed')) {
+                m.style.transition = 'none';
+                m.style.transform = 'none';
+            }
+        });
 
         // Banners are plain <a target="_blank"> links, which open in a new tab natively on
         // desktop and iOS Safari (no JS popup, so Safari's popup blocker never interferes).
