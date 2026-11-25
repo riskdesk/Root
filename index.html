@@ -535,14 +535,20 @@
             }
         });
 
-        // Banners are plain <a target="_blank"> links, which open in a new tab natively on
-        // desktop and iOS Safari (no JS popup, so Safari's popup blocker never interferes).
-        // Fully remove the invisible splash layer so it can never sit above the banners on touch devices.
-        const splashEl = document.getElementById('splashScreen');
-        splashEl.addEventListener('transitionend', (ev) => {
-            if (ev.target === splashEl && splashEl.classList.contains('dusted')) {
-                splashEl.style.display = 'none';
-            }
+        // Banner links: try a NEW tab first (desktop + iPhone). If the browser blocks the new tab
+        // (iOS Safari can do this silently), open the link in the same tab so a tap never does nothing.
+        document.querySelectorAll('.portal-banner').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = link.href;
+                let win = null;
+                try { win = window.open(url, '_blank'); } catch (err) {}
+                if (win) {
+                    try { win.opener = null; } catch (err) {}
+                } else {
+                    window.location.assign(url);
+                }
+            });
         });
     </script>
 </body>
