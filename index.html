@@ -189,6 +189,8 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
             transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s ease;
             min-height: 240px;
+            cursor: pointer;
+            touch-action: manipulation;
         }
         @media (min-width: 1024px) {
             .portal-banner {
@@ -197,10 +199,12 @@
             }
         }
 
-        .portal-banner:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
-            border-color: var(--accent-color);
+        @media (hover: hover) and (pointer: fine) {
+            .portal-banner:hover {
+                transform: translateY(-8px) scale(1.03);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+                border-color: var(--accent-color);
+            }
         }
 
         .banner-icon-wrapper {
@@ -215,9 +219,11 @@
             transition: background 0.3s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .portal-banner:hover .banner-icon-wrapper {
-            background: rgba(0, 113, 227, 0.05);
-            transform: scale(1.05);
+        @media (hover: hover) and (pointer: fine) {
+            .portal-banner:hover .banner-icon-wrapper {
+                background: rgba(0, 113, 227, 0.05);
+                transform: scale(1.05);
+            }
         }
 
         .banner-icon-svg {
@@ -238,8 +244,10 @@
             height: 74px;
         }
 
-        .portal-banner:hover .banner-icon-svg {
-            stroke: var(--accent-color);
+        @media (hover: hover) and (pointer: fine) {
+            .portal-banner:hover .banner-icon-svg {
+                stroke: var(--accent-color);
+            }
         }
 
         .banner-title {
@@ -509,6 +517,18 @@
                 document.getElementById('portalMatrix').classList.add('revealed');
             }, 500);
         }
+
+        // Open each banner in a NEW tab on both desktop and mobile; this page's URL stays unchanged.
+        // If the browser blocks the popup, the normal link (target="_blank") still runs as a fallback.
+        document.querySelectorAll('.portal-banner').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                const win = window.open(link.href, '_blank');
+                if (win) {
+                    try { win.opener = null; } catch (err) {}
+                    e.preventDefault();
+                }
+            });
+        });
     </script>
 </body>
 </html>
