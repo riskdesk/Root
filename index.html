@@ -191,6 +191,9 @@
             min-height: 240px;
             cursor: pointer;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 20;
         }
         @media (min-width: 1024px) {
             .portal-banner {
@@ -516,18 +519,19 @@
             setTimeout(() => {
                 document.getElementById('portalMatrix').classList.add('revealed');
             }, 500);
+            setTimeout(() => {
+                document.getElementById('splashScreen').style.display = 'none';
+            }, 900);
         }
 
-        // Open each banner in a NEW tab on both desktop and mobile; this page's URL stays unchanged.
-        // If the browser blocks the popup, the normal link (target="_blank") still runs as a fallback.
-        document.querySelectorAll('.portal-banner').forEach((link) => {
-            link.addEventListener('click', (e) => {
-                const win = window.open(link.href, '_blank');
-                if (win) {
-                    try { win.opener = null; } catch (err) {}
-                    e.preventDefault();
-                }
-            });
+        // Banners are plain <a target="_blank"> links, which open in a new tab natively on
+        // desktop and iOS Safari (no JS popup, so Safari's popup blocker never interferes).
+        // Fully remove the invisible splash layer so it can never sit above the banners on touch devices.
+        const splashEl = document.getElementById('splashScreen');
+        splashEl.addEventListener('transitionend', (ev) => {
+            if (ev.target === splashEl && splashEl.classList.contains('dusted')) {
+                splashEl.style.display = 'none';
+            }
         });
     </script>
 </body>
